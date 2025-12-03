@@ -445,7 +445,8 @@ bool ModuleManager::lookupModuleFile(StringRef FileName, off_t ExpectedSize,
   // Open the file immediately to ensure there is no race between stat'ing and
   // opening the file.
   File = FileMgr.getOptionalFileRef(FileName, /*OpenFile=*/true,
-                                    /*CacheFailure=*/false);
+                                    /*CacheFailure=*/false,
+                                    /*IsText=*/false);
 
   if (File &&
       ((ExpectedSize && ExpectedSize != File->getSize()) ||
