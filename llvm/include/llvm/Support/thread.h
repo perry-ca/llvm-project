@@ -101,7 +101,13 @@ public:
     return *this;
   }
 
-  bool joinable() const noexcept { return get_id() != 0; }
+  bool joinable() const noexcept {
+#ifdef __MVS__
+    return get_id() != 0;
+#else
+    return Thread != native_handle_type();
+#endif
+  }
 
   inline id get_id() const noexcept;
 
