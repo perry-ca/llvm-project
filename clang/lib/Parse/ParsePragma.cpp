@@ -402,6 +402,12 @@ struct PragmaExportHandler : public PragmaHandler {
                     Token &FirstToken) override;
 };
 
+struct PragmaMapHandler : public PragmaHandler {
+  PragmaMapHandler() : PragmaHandler("map") {}
+  void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
+                    Token &FirstToken) override;
+};
+
 struct PragmaRISCVHandler : public PragmaHandler {
   PragmaRISCVHandler(Sema &Actions)
       : PragmaHandler("riscv"), Actions(Actions) {}
@@ -568,6 +574,8 @@ void Parser::initializePragmaHandlers() {
   if (getLangOpts().ZOSExt) {
     ExportHandler = std::make_unique<PragmaExportHandler>();
     PP.AddPragmaHandler(ExportHandler.get());
+    MapHandler = std::make_unique<PragmaMapHandler>();
+    PP.AddPragmaHandler(MapHandler.get());
   }
 
   if (getTargetInfo().getTriple().isRISCV()) {
@@ -707,6 +715,8 @@ void Parser::resetPragmaHandlers() {
   if (getLangOpts().ZOSExt) {
     PP.RemovePragmaHandler(ExportHandler.get());
     ExportHandler.reset();
+    PP.RemovePragmaHandler(MapHandler.get());
+    MapHandler.reset();
   }
 
   if (getTargetInfo().getTriple().isRISCV()) {
@@ -1403,10 +1413,38 @@ bool Parser::HandlePragmaMSAllocText(StringRef PragmaName,
   return true;
 }
 
+bool Parser::zOSParseParameterList(
+    StringRef PragmaName, std::optional<SmallVector<QualType, 4>> &TypeList) {
+  if (Tok.is(tok::l_paren)) {
+    TypeList = SmallVector<QualType, 4>();
+    PP.Lex(Tok);
+    while (Tok.isNot(tok::eof) && !Tok.is(tok::r_paren)) {
+      TypeResult TResult = ParseTypeName(nullptr);
+      if (!TResult.isInvalid()) {
+        QualType QT = TResult.get().get();
+        if (!QT.getTypePtr()->isVoidType()) {
+          TypeList->push_back(QT);
+        }
+      }
+      if (Tok.is(tok::comma) || Tok.is(tok::identifier))
+        PP.Lex(Tok);
+    }
+    if (Tok.is(tok::r_paren))
+      PP.Lex(Tok);
+    else {
+      // We ate the whole line trying to find the right paren of the parameter
+      // list.
+      PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_identifier)
+          << PragmaName;
+      return false;
+    }
+  }
+  return true;
+}
+
 void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
   assert(Tok.is(PragmaKind));
 
-  StringRef PragmaName = "export";
 
   using namespace clang::charinfo;
   auto *TheTokens =
@@ -1418,6 +1456,10 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
   llvm::scope_exit OnReturn([this]() { SkipUntil(tok::eof); });
 
   do {
+    bool IsPragmaMap = PragmaKind == tok::annot_pragma_map;
+    StringRef PragmaName = IsPragmaMap? "map" : "export";
+    bool AcceptCxxAndFunctionIdents = IsPragmaMap && PP.getLangOpts().CPlusPlus;
+
     PP.Lex(Tok);
     if (Tok.isNot(tok::l_paren)) {
       PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_lparen)
@@ -1436,6 +1478,37 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
     SourceLocation IdentNameLoc = Tok.getLocation();
     PP.Lex(Tok);
 
+    // C++ can have a paramater list for overloaded functions.
+    // Try to parse the argument types.
+    std::optional<SmallVector<QualType, 4>> TypeList;
+
+    if (AcceptCxxAndFunctionIdents && Tok.is(tok::l_paren)) {
+      if (!zOSParseParameterList(PragmaName, TypeList))
+        return;
+    }
+
+    // If we are parsing string literal for this pragma.
+    StringLiteral *MappedName = nullptr;
+    if (IsPragmaMap) {
+      if (Tok.isNot(tok::comma)) {
+        PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_comma)
+            << PragmaName;
+        return;
+      }
+      if (Tok.isNot(tok::string_literal)) {
+       PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_string)
+           << PragmaName;
+       return;
+      }
+
+      ExprResult StringResult = (SaveAndRestore<ConversionAction>(
+                                     ParserConversionAction, ToSystemCharset),
+                                 ParseStringLiteralExpression());
+      if (StringResult.isInvalid())
+        return; // Already diagnosed.
+      MappedName = cast<StringLiteral>(StringResult.get());
+    }
+
     if (Tok.isNot(tok::r_paren)) {
       PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_rparen)
           << PragmaName;
@@ -1443,12 +1516,22 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
     }
 
     PP.Lex(Tok);
-    Actions.ActOnPragmaExport(IdentName, IdentNameLoc, getCurScope());
+    if (IsPragmaMap) {
+      assert(MappedName && "MappedName was not set.");
+      if (MappedName->getLength() != 0)
+        Actions.ActOnPragmaMap(IdentName, IdentNameLoc, getCurScope(),
+                               MappedName->getString(), std::move(TypeList));
+    } else
+      Actions.ActOnPragmaExport(IdentName, IdentNameLoc, getCurScope());
 
     // Because export is also a C++ keyword, we also check for that.
     if (Tok.is(tok::identifier) || Tok.is(tok::kw_export)) {
-      PragmaName = Tok.getIdentifierInfo()->getName();
-      if (PragmaName != "export")
+      StringRef TokenName = Tok.getIdentifierInfo()->getName();
+      if (TokenName == "map")
+        PragmaKind = tok::annot_pragma_map
+      else if (TokenName == "export")
+        PragmaKind = tok::annot_pragma_export;
+      else
         PP.Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
             << PragmaName;
     } else if (Tok.isNot(tok::eof)) {
@@ -1464,6 +1547,12 @@ void Parser::HandlePragmaExport() {
   assert(Tok.is(tok::annot_pragma_export));
 
   zOSHandlePragmaHelper(tok::annot_pragma_export);
+}
+
+void Parser::HandlePragmaMap() {
+  assert(Tok.is(tok::annot_pragma_map));
+
+  zOSHandlePragmaHelper(tok::annot_pragma_map);
 }
 
 static std::string PragmaLoopHintString(Token PragmaName, Token Option) {
@@ -4249,6 +4338,13 @@ void PragmaExportHandler::HandlePragma(Preprocessor &PP,
                                        PragmaIntroducer Introducer,
                                        Token &FirstToken) {
   zOSPragmaHandlerHelper(PP, FirstToken, tok::annot_pragma_export);
+}
+
+/// Handle #pragma map.
+void PragmaMapHandler::HandlePragma(Preprocessor &PP,
+                                    PragmaIntroducer Introducer,
+                                    Token &FirstToken) {
+  zOSPragmaHandlerHelper(PP, FirstToken, tok::annot_pragma_map);
 }
 
 // Handle '#pragma clang riscv intrinsic vector'.

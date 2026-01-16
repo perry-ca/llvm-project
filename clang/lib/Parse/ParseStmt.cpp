@@ -509,6 +509,12 @@ Retry:
     Diag(Tok, diag::err_pragma_file_scope) << "export";
     ConsumeAnnotationToken();
     return StmtEmpty();
+  case tok::annot_pragma_map:
+    ProhibitAttributes(CXX11Attrs);
+    ProhibitAttributes(GNUAttrs);
+    Diag(Tok, diag::err_pragma_file_scope) << "map";
+    ConsumeAnnotationToken();
+    return StmtEmpty();
   }
 
   // If we reached this code, the statement must end in a semicolon.
@@ -1040,6 +1046,10 @@ void Parser::ParseCompoundStatementLeadingPragmas() {
       break;
     case tok::annot_pragma_export:
       Diag(Tok, diag::err_pragma_file_scope) << "export";
+      ConsumeAnnotationToken();
+      break;
+    case tok::annot_pragma_map:
+      Diag(Tok, diag::err_pragma_file_scope) << "map";
       ConsumeAnnotationToken();
       break;
     default:
