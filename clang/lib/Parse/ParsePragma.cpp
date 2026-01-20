@@ -1422,9 +1422,7 @@ bool Parser::zOSParseParameterList(
       TypeResult TResult = ParseTypeName(nullptr);
       if (!TResult.isInvalid()) {
         QualType QT = TResult.get().get();
-        if (!QT.getTypePtr()->isVoidType()) {
-          TypeList->push_back(QT);
-        }
+        TypeList->push_back(QT);
       }
       if (Tok.is(tok::comma) || Tok.is(tok::identifier))
         PP.Lex(Tok);
@@ -1453,12 +1451,17 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
                       false);
   ConsumeAnnotationToken();
 
-  llvm::scope_exit OnReturn([this]() { SkipUntil(tok::eof); });
+  llvm::scope_exit OnReturn([this]() {
+    while (Tok.isNot(tok::eof))
+      PP.Lex(Tok);
+    PP.Lex(Tok);
+  });
 
   do {
-    bool IsPragmaMap = PragmaKind == tok::annot_pragma_map;
+    const bool IsPragmaMap = PragmaKind == tok::annot_pragma_map;
     StringRef PragmaName = IsPragmaMap? "map" : "export";
-    bool AcceptCxxAndFunctionIdents = IsPragmaMap && PP.getLangOpts().CPlusPlus;
+    const bool AcceptCxxAndFunctionIdents =
+        IsPragmaMap && PP.getLangOpts().CPlusPlus;
 
     PP.Lex(Tok);
     if (Tok.isNot(tok::l_paren)) {
@@ -1478,13 +1481,15 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
     SourceLocation IdentNameLoc = Tok.getLocation();
     PP.Lex(Tok);
 
-    // C++ can have a paramater list for overloaded functions.
-    // Try to parse the argument types.
-    std::optional<SmallVector<QualType, 4>> TypeList;
-
     if (AcceptCxxAndFunctionIdents && Tok.is(tok::l_paren)) {
-      if (!zOSParseParameterList(PragmaName, TypeList))
+      SourceLocation LparenLoc = Tok.getLocation();
+      PP.Lex(Tok);
+      if (!SkipUntil(tok::r_paren)) {
+        PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_rparen)
+            << PragmaName;
         return;
+      }
+      PP.Diag(LparenLoc, diag::warn_pragma_ignore_args) << PragmaName;
     }
 
     // If we are parsing string literal for this pragma.
@@ -1495,15 +1500,16 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
             << PragmaName;
         return;
       }
+      PP.Lex(Tok);
+
       if (Tok.isNot(tok::string_literal)) {
        PP.Diag(Tok.getLocation(), diag::warn_pragma_expected_string)
            << PragmaName;
        return;
       }
 
-      ExprResult StringResult = (SaveAndRestore<ConversionAction>(
-                                     ParserConversionAction, ToSystemCharset),
-                                 ParseStringLiteralExpression());
+      // TODO: The string literal needs to be converted into ebcdic.
+      ExprResult StringResult = ParseUnevaluatedStringLiteralExpression();
       if (StringResult.isInvalid())
         return; // Already diagnosed.
       MappedName = cast<StringLiteral>(StringResult.get());
@@ -1520,7 +1526,7 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
       assert(MappedName && "MappedName was not set.");
       if (MappedName->getLength() != 0)
         Actions.ActOnPragmaMap(IdentName, IdentNameLoc, getCurScope(),
-                               MappedName->getString(), std::move(TypeList));
+                               MappedName->getString());
     } else
       Actions.ActOnPragmaExport(IdentName, IdentNameLoc, getCurScope());
 
@@ -1528,12 +1534,14 @@ void Parser::zOSHandlePragmaHelper(tok::TokenKind PragmaKind) {
     if (Tok.is(tok::identifier) || Tok.is(tok::kw_export)) {
       StringRef TokenName = Tok.getIdentifierInfo()->getName();
       if (TokenName == "map")
-        PragmaKind = tok::annot_pragma_map
+        PragmaKind = tok::annot_pragma_map;
       else if (TokenName == "export")
         PragmaKind = tok::annot_pragma_export;
-      else
+      else {
         PP.Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
             << PragmaName;
+        return;
+      }
     } else if (Tok.isNot(tok::eof)) {
       PP.Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
           << PragmaName;

@@ -2326,16 +2326,12 @@ public:
   };
 
   struct PendingPragmaMapInfo : public PendingPragmaInfo {
-    std::optional<SmallVector<QualType>> TypeList;
     AsmLabelAttr *Attr; // The attribute to attach.
   };
 
   llvm::DenseMap<IdentifierInfo *, PendingPragmaInfo> PendingExportedNames;
 
- llvm::DenseMap<IdentifierInfo *, PragmaMapLabel> PendingMappedNames;
-
-  bool typeListMatchesSymbolLabel(FunctionDecl *FD,
-                                  const clang::Sema::PragmaMapLabel &Label);
+  llvm::DenseMap<IdentifierInfo *, PendingPragmaMapInfo> PendingMappedNames;
 
   /// ActonPragmaExport - called on well-formed '\#pragma export'.
   void ActOnPragmaExport(IdentifierInfo *IdentId, SourceLocation ExportNameLoc,
@@ -2343,8 +2339,7 @@ public:
 
   /// ActOnPragmaMap - called on well-formed '\#pragma map'.
   void ActOnPragmaMap(IdentifierInfo *IdentId, SourceLocation NameLoc,
-                      Scope *curScope, const StringRef MappedName,
-                      std::optional<SmallVector<QualType, 4>> &&TypeList);
+                      Scope *curScope, const StringRef MappedName);
 
   /// Only called on function definitions; if there is a pragma in scope
   /// with the effect of a range-based optnone, consider marking the function

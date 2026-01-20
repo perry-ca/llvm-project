@@ -7165,6 +7165,9 @@ private:
 
   void zOSHandlePragmaHelper(tok::TokenKind);
 
+  bool zOSParseParameterList(StringRef PragmaName,
+                             std::optional<SmallVector<QualType, 4>> &TypeList);
+
   /// Handle the annotation token produced for
   /// #pragma export ...
   void HandlePragmaExport();
