@@ -5657,6 +5657,8 @@ void ASTWriter::PrepareWritingSpecialDecls(Sema &SemaRef) {
                      PREDEF_DECL_CF_CONSTANT_STRING_ID);
   RegisterPredefDecl(Context.CFConstantStringTagDecl,
                      PREDEF_DECL_CF_CONSTANT_STRING_TAG_ID);
+  RegisterPredefDecl(Context.BuiltinZOSVaListDecl,
+                     PREDEF_DECL_BUILTIN_ZOS_VA_LIST_ID);
 #define BuiltinTemplate(BTName)                                                \
   RegisterPredefDecl(Context.Decl##BTName, PREDEF_DECL##BTName##_ID);
 #include "clang/Basic/BuiltinTemplates.inc"

@@ -580,6 +580,12 @@ void Sema::Initialize() {
       PushOnScopeChains(Context.getBuiltinMSVaListDecl(), TUScope);
   }
 
+  if (Context.getTargetInfo().hasBuiltinZOSVaList()) {
+    DeclarationName ZOSVaList = &Context.Idents.get("__builtin_zos_va_list");
+    if (IdResolver.begin(ZOSVaList) == IdResolver.end())
+      PushOnScopeChains(Context.getBuiltinZOSVaListDecl(), TUScope);
+  }
+
   DeclarationName BuiltinVaList = &Context.Idents.get("__builtin_va_list");
   if (IdResolver.begin(BuiltinVaList) == IdResolver.end())
     PushOnScopeChains(Context.getBuiltinVaListDecl(), TUScope);

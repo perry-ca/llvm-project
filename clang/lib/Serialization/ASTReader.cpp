@@ -8385,6 +8385,12 @@ Decl *ASTReader::getPredefinedDecl(PredefinedDeclIDs ID) {
   case PREDEF_DECL_BUILTIN_MS_TYPE_INFO_TAG_ID:
     return Context.getMSTypeInfoTagDecl();
 
+  case PREDEF_DECL_BUILTIN_ZOS_VA_LIST_ID:
+    if (Context.BuiltinZOSVaListDecl)
+      return Context.BuiltinZOSVaListDecl;
+    NewLoaded = Context.getBuiltinZOSVaListDecl();
+    break;
+
 #define BuiltinTemplate(BTName)                                                \
   case PREDEF_DECL##BTName##_ID:                                               \
     if (Context.Decl##BTName)                                                  \
