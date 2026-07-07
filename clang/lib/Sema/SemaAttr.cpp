@@ -1437,7 +1437,8 @@ void Sema::ActOnPragmaMap(IdentifierInfo *IdentId, SourceLocation NameLoc,
   // All identifiers must be in UTF-8.
   // TODO Is this the right place for the conversion?.
   llvm::SmallString<16> MappedNameUTF;
-  llvm::ConverterEBCDIC::convertToUTF8(MappedName, MappedNameUTF);
+  // SDP llvm::ConverterEBCDIC::convertToUTF8(MappedName, MappedNameUTF);
+  MappedNameUTF = MappedName;
 
   AttributeCommonInfo AttrInfo(IdentId, NameLoc,
                                AttributeCommonInfo::Form::Pragma());

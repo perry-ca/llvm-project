@@ -595,6 +595,10 @@ public:
     SwiftInfo =
         std::make_unique<SwiftABIInfo>(CGT, /*SwiftErrorInRegister=*/false);
   }
+
+  void emitTargetMetadata(CodeGen::CodeGenModule &CGM,
+                          const llvm::MapVector<GlobalDecl, StringRef>
+                              &MangledDeclNames) const override;
 };
 
 } // namespace
@@ -905,6 +909,40 @@ RValue ZOSXPLinkABIInfo::EmitVAArg(CodeGenFunction &CGF, Address VAListAddr,
                           CGF.getContext().getTypeInfoInChars(Ty),
                           CGF.getPointerSize(),
                           /*allowHigherAlign*/ false, Slot);
+}
+
+void ZOSXPLinkTargetCodeGenInfo::emitTargetMetadata(
+    CodeGen::CodeGenModule &CGM,
+    const llvm::MapVector<GlobalDecl, StringRef> &MangledDeclNames) const {
+  llvm::SmallVector<llvm::MDNode *> MappedNames;
+  llvm::LLVMContext &Context = CGM.getLLVMContext();
+
+  // Warning, new MangledDeclNames may be appended within this loop.
+  // We rely on MapVector insertions adding new elements to the end
+  // of the container.
+  for (unsigned I = 0; I != MangledDeclNames.size(); ++I) {
+    auto &[GlobalDecl, MangledName] = *(MangledDeclNames.begin() + I);
+    if (auto *Decl = llvm::dyn_cast_or_null<NamedDecl>(
+            GlobalDecl.getDecl()->getMostRecentDecl())) {
+      if (Decl->hasAttr<AsmLabelAttr>()) {
+        std::string OrigName = CGM.getMangledNameImpl(
+            GlobalDecl.getCanonicalDecl(), Decl,
+            /*OmitMultiVersionMangling=*/false, /*WantAsmLabel=*/false);
+
+        llvm::Metadata *Args[2] = {
+            llvm::MDString::get(Context, MangledName),
+            llvm::MDString::get(Context, OrigName),
+        };
+        MappedNames.push_back(llvm::MDNode::get(Context, Args));
+      }
+    }
+  }
+  if (!MappedNames.empty()) {
+    // Add mapped name to the metadata flag.
+    auto *NMD = CGM.getModule().getOrInsertNamedMetadata("zos_mapped_names");
+    for (auto *MD : MappedNames)
+      NMD->addOperand(MD);
+  }
 }
 
 std::unique_ptr<TargetCodeGenInfo>
