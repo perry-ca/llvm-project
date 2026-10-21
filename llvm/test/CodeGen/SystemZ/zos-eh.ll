@@ -1,4 +1,3 @@
-; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llc -mtriple s390x-zos -filetype=obj %s -o %t.o
 ; RUN: llc -mtriple s390x-zos < %s | FileCheck %s
 
