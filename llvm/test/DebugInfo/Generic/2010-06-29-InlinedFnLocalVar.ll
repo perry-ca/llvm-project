@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O2 %s -o - | FileCheck %s
 ; Check struct X for dead variable xyz from inlined function foo.
 

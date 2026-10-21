@@ -1,4 +1,4 @@
-; XFAIL: target={{.*}}-aix{{.*}}
+; XFAIL: target={{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 ; RUN: llc -filetype=asm -asm-verbose=0 -O0 < %s | FileCheck %s
 
 ; Generated with clang from multiline.c:

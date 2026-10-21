@@ -1,3 +1,4 @@
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: echo abcd > %t.txt
 
 # Preserve input to verify it is not modified

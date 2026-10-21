@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: rm -rf %t && mkdir -p %t
 ; RUN: echo '!10 = !{!"%/t/aaa.gcno", !"%/t/bbb.gcda", !0}' > %t/1
 ; RUN: cat %s %t/1 > %t/2

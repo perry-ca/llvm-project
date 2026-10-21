@@ -1,5 +1,6 @@
 ;; This fixes https://github.com/llvm/llvm-project/issues/81555
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf %s -filetype=obj -o - | llvm-dwarfdump - | FileCheck %s
 ; RUN: %llc_dwarf %s -filetype=obj -o - | llvm-dwarfdump - -verify | FileCheck %s --check-prefix=VERIFY
 

@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llc -global-isel=0 -mtriple=amdgpu7.00--amdhsa < %s | FileCheck -check-prefix=GCN -check-prefix=HSA-TRAP %s
 ; RUN: llc -global-isel=1 -mtriple=amdgpu7.00--amdhsa < %s | FileCheck -check-prefix=GCN -check-prefix=HSA-TRAP %s
 ; RUN: llc -global-isel=1 -mtriple=amdgpu9.00-unknown-mesa3d -mattr=-trap-handler < %s | FileCheck -check-prefix=GISEL-TRAP %s

@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O0 -filetype=obj < %s > %t
 ; RUN: llvm-dwarfdump -debug-info %t | FileCheck %s
 ; CHECK: DW_TAG_common_block

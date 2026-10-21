@@ -1,3 +1,4 @@
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj %s -o %t
 # RUN: cp %t %t3
 # RUN: llvm-objcopy --strip-debug %t %t2

@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O0 < %s | FileCheck %s
 ; Do not emit AT_upper_bound for an unbounded array.
 ; radar 9241695

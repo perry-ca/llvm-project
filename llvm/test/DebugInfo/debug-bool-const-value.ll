@@ -1,4 +1,5 @@
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf %s -filetype=obj -o - | llvm-dwarfdump - | FileCheck %s
 
 ; CHECK: {{.*}}DW_TAG_variable

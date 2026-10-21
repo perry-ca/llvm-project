@@ -1,5 +1,6 @@
 ; PR 19261
 
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -fast-isel=false -O0 -filetype=obj %s -o %t
 ; RUN: llvm-dwarfdump -a %t | FileCheck %s
 

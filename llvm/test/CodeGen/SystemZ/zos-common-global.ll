@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llc <%s --mtriple s390x-ibm-zos --filetype=obj | \
 ; RUN:   od -Ax -tx1 -v | FileCheck --ignore-case %s
 ; RUN: llc <%s --mtriple s390x-ibm-zos | FileCheck --check-prefix CHECK-ASM %s

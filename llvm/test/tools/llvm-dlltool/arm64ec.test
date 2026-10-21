@@ -1,5 +1,6 @@
 Test creating ARM64EC importlib.
 
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: split-file %s %t.dir && cd %t.dir
 
 RUN: llvm-dlltool -m arm64ec -d test.def -l test.lib

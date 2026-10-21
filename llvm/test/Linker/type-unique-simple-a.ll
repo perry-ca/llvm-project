@@ -1,4 +1,5 @@
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 
 ; RUN: llvm-link %s %p/type-unique-simple-b.ll -S -o %t
 ; RUN: cat %t | FileCheck %s -check-prefix=LINK

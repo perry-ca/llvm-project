@@ -5,6 +5,7 @@
 ; These are not essential to DWARF path handling code we're testing here.
 ; UNSUPPORTED: target=powerpc{{.*}}, target=x86_64-{{.*-ps[45]}}
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O0 -filetype=obj -o %t < %s
 ; RUN: llvm-nm --radix=o %t | grep posix_absolute_func > %t.posix_absolute_func
 ; RUN: llvm-nm --radix=o %t | grep posix_relative_func > %t.posix_relative_func

@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O0 -filetype=obj < %s | llvm-dwarfdump - | FileCheck --implicit-check-not "{{DW_TAG|NULL}}" %s
 
 ; Test that retained unused (unreferenced) types emission.

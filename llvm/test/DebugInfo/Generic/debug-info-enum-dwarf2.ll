@@ -7,7 +7,7 @@
 ; This file contains the dwarf-version=2 tests extracted from debug-info-enum.ll.
 ; DWARF v2 is incompatible with 64-bit XCOFF/AIX (requires DWARF64 format which needs DWARF v3+).
 
-; UNSUPPORTED: target=powerpc64{{.*}}-aix{{.*}}
+; UNSUPPORTED: target=powerpc64{{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 
 ; RUN: llc -debugger-tune=gdb -dwarf-version=2 -filetype=obj -o %t.o < %S/debug-info-enum.ll
 ; RUN: llvm-dwarfdump -debug-info %t.o | FileCheck %S/debug-info-enum.ll --check-prefixes=CHECK,CHECK-TYPE

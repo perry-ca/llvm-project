@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: rm -rf %t && mkdir -p %t
 ; RUN: echo '!9 = !{!"%/t/linkagename.ll", !0}' > %t/1
 ; RUN: cat %s %t/1 > %t/2

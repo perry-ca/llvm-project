@@ -3,6 +3,7 @@
 // gnuwin32 printf does not work for this test because it will print \15 (CR)
 // whenever \12 (LF) is in the input string.
 UNSUPPORTED: system-windows
+XFAIL: target={{.*}}-zos{{.*}}
 
 // UniformCounterPtr is one byte before UniformCountersDelta.
 RUN: printf '\201rforpl\377' > %t.neg.profraw

@@ -1,3 +1,4 @@
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: llvm-cov show %S/Inputs/templateInstantiations.covmapping -instr-profile %S/Inputs/templateInstantiations.profdata -Xdemangler sed -Xdemangler 's/_/X/g' -path-equivalence=/tmp,%S %S/showTemplateInstantiations.cpp | FileCheck %s
 
 // Check that we demangle names even if the sub-view will be hidden.

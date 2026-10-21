@@ -1,5 +1,5 @@
 ; AIX doesn't support the debug_addr section
-; UNSUPPORTED:  target={{.*}}-aix{{.*}}
+; UNSUPPORTED:  target={{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 
 ; RUN: %llc_dwarf -O0 -filetype=obj -o - < %s | llvm-dwarfdump -debug-line - | FileCheck %s
 

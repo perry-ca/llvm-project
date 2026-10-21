@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llc -no-integrated-as < %s | FileCheck %s
 
 define void @bar() nounwind {

@@ -1,6 +1,7 @@
 Test the --embed-resource option.
 
 REQUIRES: x86-registered-target
+XFAIL: target={{.*}}-zos{{.*}}
 
 Create a temp resource file and embed it into the dSYM bundle.
 

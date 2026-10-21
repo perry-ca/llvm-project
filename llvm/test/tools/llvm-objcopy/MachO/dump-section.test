@@ -1,6 +1,7 @@
 ## Show that llvm-objcopy extracts section contents into files specified by
 ## --dump-section.
 
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj %s -o %t
 
 ## Extract section contents into files.

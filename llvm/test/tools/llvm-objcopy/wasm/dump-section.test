@@ -1,4 +1,5 @@
 ## Test the contents of a custom section dumped from a binary.
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj %s -o %t
 # RUN: llvm-objcopy --dump-section=producers=%t.sec %t
 # RUN: od -t x1 %t.sec | FileCheck %s

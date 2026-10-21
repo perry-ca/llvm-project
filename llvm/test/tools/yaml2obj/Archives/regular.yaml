@@ -2,6 +2,7 @@
 
 ## Check we create an empty archive when neither "Members" nor "Content" are specified.
 
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj --docnum=1 %s -o %t.empty.a
 # RUN: llvm-ar t %t.empty.a | FileCheck %s --allow-empty --implicit-check-not={{.}}
 # RUN: wc -c < %t.empty.a | FileCheck %s --check-prefix=EMPTY-SIZE

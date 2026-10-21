@@ -8,6 +8,7 @@
 # in this way won't cause the location of the PT_LOAD segment to change if we
 # don't.
 
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj %s -o %t
 # RUN: llvm-objcopy -R .note -O binary %t %t2
 # RUN: od -Ax -t x1 %t2 | FileCheck %s

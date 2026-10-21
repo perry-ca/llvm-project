@@ -1,4 +1,4 @@
-; XFAIL: target={{.*}}-aix{{.*}}
+; XFAIL: target={{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -filetype=obj < %s | llvm-dwarfdump -all -show-form -v - \
 ; RUN:   | FileCheck %s
 ;

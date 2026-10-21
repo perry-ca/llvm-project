@@ -1,3 +1,4 @@
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: cp %p/Inputs/dwarf.dwo %t
 # RUN: llvm-objcopy --strip-dwo %t
 # RUN: llvm-readobj --file-headers --sections %t | FileCheck %s

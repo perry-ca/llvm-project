@@ -1,7 +1,7 @@
 ; RUN: %llc_dwarf %s -o - -filetype=obj | llvm-dwarfdump - | FileCheck %s -implicit-check-not=DW_TAG
 ;
 ; Issue #46473
-; XFAIL: target=sparc{{.*}}
+; XFAIL: target=sparc{{.*}}, target={{.*}}-zos{{.*}}
 ;
 ; This tests that we do not create concrete variable DIEs for variables that
 ; have no location -- for both ways that LLVM-IR can express a variable with

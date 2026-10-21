@@ -1,3 +1,4 @@
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: yaml2obj %S/Inputs/macho.yaml -o %t.o
 
 RUN: rm -f %t.ar

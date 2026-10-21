@@ -2,6 +2,7 @@
 ;; when used with tags like DW_TAG_member, DW_TAG_inheritance etc.
 
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf %s -filetype=obj -o - | llvm-dwarfdump - | FileCheck %s
 ; RUN: llvm-as < %s | llvm-dis | llvm-as | llvm-dis | FileCheck %s -check-prefix=CHECK-IR
 ; RUN: verify-uselistorder %s

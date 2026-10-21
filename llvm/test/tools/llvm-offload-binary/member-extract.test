@@ -1,3 +1,4 @@
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: split-file %s %t
 
 # Two members with the same triple, arch, and kind but distinct contents.

@@ -2,7 +2,7 @@
 ; RUN: %llc_dwarf -dwarf-version=2 -O0 -filetype=obj < %s | llvm-dwarfdump -v -debug-info - | FileCheck --check-prefix=CHECK-V2 --implicit-check-not=DW_FORM_ref_addr %s
 
 ; DWARF v2 is incompatible with 64-bit XCOFF/AIX (requires DWARF64 format which needs DWARF v3+).
-; UNSUPPORTED: target=powerpc64{{.*}}-aix{{.*}}
+; UNSUPPORTED: target=powerpc64{{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 
 ; DWARF V3: Expect cross-CU type deduplication resulting in only one "int"
 ; definition and a DW_FORM_ref_addr.

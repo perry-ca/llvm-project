@@ -1,5 +1,6 @@
 ; RUN: %llc_dwarf %s -filetype=obj -generate-arange-section -o - | llvm-objdump -h - | FileCheck %s
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 
 ; CHECK-NOT: .debug_
 

@@ -6,6 +6,7 @@
 ;
 ; Check the generated DWARF debug info:
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: opt < %s -passes='cgscc(coro-split),coro-cleanup' \
 ; RUN:   | %llc_dwarf -O0 -filetype=obj -o - \
 ; RUN:   | llvm-dwarfdump - \

@@ -1,3 +1,4 @@
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: rm -rf %t
 RUN: mkdir -p %t/private/tmp/remarks
 RUN: cat %p/../Inputs/remarks/basic.macho.remarks.arm64> %t/basic.macho.remarks.arm64

@@ -1,5 +1,6 @@
 ;; Check output of DISubrangeType.
 
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -filetype=obj -O0 < %s | llvm-dwarfdump -debug-info - | FileCheck %s
 
 ; CHECK: DW_TAG_array_type

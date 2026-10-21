@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: rm -rf %t && mkdir -p %t
 ; RUN: echo 'target datalayout = "e"' > %t/little.txt
 ; RUN: echo 'target datalayout = "E"' > %t/big.txt

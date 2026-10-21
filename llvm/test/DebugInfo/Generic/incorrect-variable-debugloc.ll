@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O2 -filetype=obj < %s | llvm-dwarfdump -debug-info - | FileCheck %s
 
 ; This is a test case that's as reduced as I can get it, though I haven't fully

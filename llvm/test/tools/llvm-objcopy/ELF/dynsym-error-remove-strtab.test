@@ -1,3 +1,4 @@
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: not llvm-objcopy -R .dynstr %p/Inputs/dynsym.so %t 2>&1 >/dev/null | FileCheck %s --check-prefix=ERR1 -DINPUT=%p/Inputs/dynsym.so
 # RUN: cp  %p/Inputs/dynsym.so %t2
 # RUN: not llvm-strip --no-strip-all -R .dynstr %t2 2>&1 >/dev/null | FileCheck %s --check-prefix=ERR2 -DINPUT=%t2

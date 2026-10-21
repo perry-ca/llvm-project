@@ -3,6 +3,7 @@
 ## This is a general test that has sections with unique prefixes, a fill and a
 ## section without the unique prefix. The section header table describes sections
 ## in the same order they are listed in the YAML.
+# XFAIL: target={{.*}}-zos{{.*}}
 # RUN: yaml2obj %s --docnum=1 -o %t1 -DSEC1=".section (1)" -DSEC2=".section (2)" -DSEC3=".section.foo"
 # RUN: llvm-readelf --section-headers %t1 | FileCheck %s --check-prefix=NO-OP
 

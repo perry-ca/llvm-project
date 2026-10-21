@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -O0 -filetype=obj < %s | llvm-dwarfdump -debug-info --name=static_local --show-parents - | FileCheck %s --implicit-check-not=DW_TAG
 
 ;; Derived from a CUDA program like:

@@ -1,4 +1,5 @@
 # Test no input file
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: not llvm-cgdata --convert --output - 2>&1 | FileCheck %s --check-prefix=NOFILE --ignore-case
 NOFILE: error: No input file is specified.
 

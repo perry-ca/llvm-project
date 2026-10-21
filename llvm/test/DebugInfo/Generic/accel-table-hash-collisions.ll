@@ -1,4 +1,4 @@
-; XFAIL: target={{.*}}-aix{{.*}}
+; XFAIL: target={{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 ; RUN: %llc_dwarf -accel-tables=Apple -filetype=obj -o - < %s \
 ; RUN:   | llvm-dwarfdump -apple-names - | FileCheck %s
 

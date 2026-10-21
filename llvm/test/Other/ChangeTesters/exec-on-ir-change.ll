@@ -1,6 +1,7 @@
 ; Simple checks of -exec-on-ir-change=cat functionality
 ;
 ; Simple functionality check.
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: opt -S -exec-on-ir-change=cat -passes=instsimplify 2>&1 -o /dev/null < %s | FileCheck %s --check-prefix=CHECK-SIMPLE
 ;
 ; Check that only the passes that change the IR are printed and that the

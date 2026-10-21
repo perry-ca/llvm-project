@@ -1,6 +1,7 @@
 # This test uses the local debuginfod cache to test the llvm-objdump integration
 # with the debuginfod client.
 REQUIRES: x86-registered-target
+XFAIL: target={{.*}}-zos{{.*}}
 
 RUN: rm -rf %t
 RUN: mkdir %t

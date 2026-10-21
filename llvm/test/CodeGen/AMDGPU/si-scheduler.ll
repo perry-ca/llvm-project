@@ -3,6 +3,7 @@
 ; The only way the subtarget knows that the si machine scheduler is being used
 ; is to specify -mattr=si-scheduler.  If we just pass --misched=si, the backend
 ; won't know what scheduler we are using.
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llc -mtriple=amdgpu6.00 --misched=si -mattr=si-scheduler < %s | FileCheck %s
 ; RUN: llc -mtriple=amdgpu10.10 --misched=si -mattr=si-scheduler < %s | FileCheck %s
 

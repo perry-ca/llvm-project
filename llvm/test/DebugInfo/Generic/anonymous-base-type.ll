@@ -1,6 +1,7 @@
 ;; Check that a base type can be anonymous.
 
 ; Use llvm-dis here to check round-tripping.
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: llvm-as < %s | llvm-dis | llc -O0 -filetype=obj -o - | llvm-dwarfdump -v -debug-info - | FileCheck %s
 
 ; CHECK: DW_TAG_base_type

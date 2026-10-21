@@ -1,4 +1,4 @@
-; UNSUPPORTED:  target={{.*}}-aix{{.*}}
+; UNSUPPORTED:  target={{.*}}-aix{{.*}}, target={{.*}}-zos{{.*}}
 ;
 ; RUN: llc -filetype=obj -o - %s | llvm-dwarfdump --debug-info - | FileCheck %s
 

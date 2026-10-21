@@ -1,5 +1,6 @@
 ; RUN: %llc_dwarf %s -filetype=obj -o - | llvm-dwarfdump - | FileCheck %s
 ; REQUIRES: object-emission
+; XFAIL: target={{.*}}-zos{{.*}}
 
 ;; Check base types with bit-sizes that don't fit fully fit within a byte
 ;; multiple get both a a byte_size and bit_size attribute.

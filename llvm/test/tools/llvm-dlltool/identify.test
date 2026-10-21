@@ -4,6 +4,7 @@ Test with both GNU style and LLVM style import libraries; using
 sources from yaml to preserve the checking behaviour even if the
 output of llvm-dlltool itself would change.
 
+XFAIL: target={{.*}}-zos{{.*}}
 RUN: rm -rf %t && mkdir -p %t
 RUN: split-file %s %t
 

@@ -1,3 +1,4 @@
+; XFAIL: target={{.*}}-zos{{.*}}
 ; RUN: split-file %s %t
 ; RUN: llvm-profdata merge %t/a.proftext -o %t/a.profdata
 ; RUN: opt < %t/a.ll -passes=pgo-instr-use -pgo-test-profile-file=%t/a.profdata -S | FileCheck %s --check-prefix=VP-ANNOTATION

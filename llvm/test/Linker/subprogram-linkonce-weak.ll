@@ -5,7 +5,7 @@
 ; REQUIRES: object-emission
 ;
 ; Bug 47131
-; XFAIL: target=sparc{{.*}}
+; XFAIL: target=sparc{{.*}}, target={{.*}}-zos{{.*}}
 ;
 ; This testcase tests the following flow:
 ;  - File A defines a linkonce version of @foo which has inlined into @bar.

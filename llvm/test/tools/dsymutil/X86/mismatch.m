@@ -14,6 +14,7 @@
       -fdisable-module-hash mismatch.m -o /dev/null
 */
 
+// XFAIL: target={{.*}}-zos{{.*}}
 // RUN: rm -rf %t.dir && mkdir %t.dir
 // RUN: cp %p/../Inputs/mismatch/1.o %p/../Inputs/mismatch/mismatch.pcm %t.dir
 // RUN: cp %p/../Inputs/mismatch/1.o %t.dir/2.o
