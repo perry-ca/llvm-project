@@ -944,6 +944,11 @@ private:
   /// triplets in the order of C name, asm name, and source location.
   SmallVector<serialization::IdentifierID, 64> ExtnameUndeclaredIdentifiers;
 
+  /// A snapshot of Sema's #pragma export'd undeclared identifier tracking. Note
+  /// that this vector has 2n entries, being pairs of C name and source
+  /// location.
+  SmallVector<serialization::IdentifierID, 64> ExportedUndeclaredIdentifiers;
+
   /// The IDs of type aliases for ext_vectors that exist in the chain.
   ///
   /// Used by Sema for finding sugared names for ext_vectors in diagnostics.
@@ -2333,6 +2338,10 @@ public:
 
   void ReadExtnameUndeclaredIdentifiers(
       SmallVectorImpl<std::pair<IdentifierInfo *, AsmLabelAttr *>> &ExtnameIDs)
+      override;
+
+  void ReadExportedUndeclaredIdentifiers(
+      SmallVectorImpl<std::pair<IdentifierInfo *, SourceLocation>> &ExportedIDs)
       override;
 
   void ReadUsedVTables(SmallVectorImpl<ExternalVTableUse> &VTables) override;

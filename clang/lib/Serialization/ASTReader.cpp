@@ -4170,6 +4170,24 @@ llvm::Error ASTReader::ReadASTBlock(ModuleFile &F,
       }
       break;
 
+    case EXPORTED_UNDECLARED_IDENTIFIERS:
+      if (Record.size() % 2 != 0)
+        return llvm::createStringError(std::errc::illegal_byte_sequence,
+                                       "invalid exported identifiers record");
+
+      // FIXME: Ignore #pragma export'd, undeclared identifiers from
+      // non-original PCH files, as is done for #pragma redefine_extname.
+      ExportedUndeclaredIdentifiers.clear();
+
+      // Translate the #pragma export'd, undeclared identifiers into global IDs.
+      for (unsigned I = 0, N = Record.size(); I < N; /* in loop */) {
+        ExportedUndeclaredIdentifiers.push_back(
+            getGlobalIdentifierID(F, Record[I++]));
+        ExportedUndeclaredIdentifiers.push_back(
+            ReadSourceLocation(F, Record, I).getRawEncoding());
+      }
+      break;
+
     case SELECTOR_OFFSETS: {
       F.SelectorOffsets = (const uint32_t *)Blob.data();
       F.LocalNumSelectors = Record[0];
@@ -9947,6 +9965,23 @@ void ASTReader::ReadExtnameUndeclaredIdentifiers(
     ExtnameIDs.push_back(std::make_pair(NameId, Attr));
   }
   ExtnameUndeclaredIdentifiers.clear();
+}
+
+void ASTReader::ReadExportedUndeclaredIdentifiers(
+    SmallVectorImpl<std::pair<IdentifierInfo *, SourceLocation>>
+        &ExportedIDs) {
+  if (ExportedUndeclaredIdentifiers.empty())
+    return;
+
+  for (unsigned I = 0, N = ExportedUndeclaredIdentifiers.size(); I < N;
+       I += 2) {
+    IdentifierInfo *NameId =
+        DecodeIdentifierInfo(ExportedUndeclaredIdentifiers[I]);
+    SourceLocation Loc =
+        SourceLocation::getFromRawEncoding(ExportedUndeclaredIdentifiers[I + 1]);
+    ExportedIDs.push_back(std::make_pair(NameId, Loc));
+  }
+  ExportedUndeclaredIdentifiers.clear();
 }
 
 void ASTReader::ReadUsedVTables(SmallVectorImpl<ExternalVTableUse> &VTables) {

@@ -7766,6 +7766,7 @@ void Sema::ProcessPragmaExport(DeclaratorDecl *NewD) {
   assert((isa<FunctionDecl>(NewD) || isa<VarDecl>(NewD)) &&
          "NewD is not a function or variable");
 
+  LoadExternalExportedUndeclaredIdentifiers();
   if (PendingExportedNames.empty())
     return;
   if (FunctionDecl *FD = dyn_cast<FunctionDecl>(NewD)) {

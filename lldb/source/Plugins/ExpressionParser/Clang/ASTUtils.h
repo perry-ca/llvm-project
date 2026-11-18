@@ -601,6 +601,13 @@ public:
       Source->ReadExtnameUndeclaredIdentifiers(EI);
   }
 
+  void ReadExportedUndeclaredIdentifiers(
+      llvm::SmallVectorImpl<std::pair<clang::IdentifierInfo *,
+                                      clang::SourceLocation>> &EI) override {
+    for (auto &Source : Sources)
+      Source->ReadExportedUndeclaredIdentifiers(EI);
+  }
+
   void ReadUsedVTables(
       llvm::SmallVectorImpl<clang::ExternalVTableUse> &VTables) override {
     for (auto &Source : Sources)

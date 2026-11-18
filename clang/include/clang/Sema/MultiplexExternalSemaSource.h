@@ -334,6 +334,17 @@ public:
       SmallVectorImpl<std::pair<IdentifierInfo *, AsmLabelAttr *>> &EI)
       override;
 
+  /// Read the set of #pragma export'd, undeclared identifiers known to the
+  /// external Sema source.
+  ///
+  /// The external source should append its own #pragma export'd, undeclared
+  /// identifiers to the given vector. Note that this routine may be invoked
+  /// multiple times; the external source should take care not to introduce the
+  /// same identifiers repeatedly.
+  void ReadExportedUndeclaredIdentifiers(
+      SmallVectorImpl<std::pair<IdentifierInfo *, SourceLocation>> &EI)
+      override;
+
   /// Read the set of used vtables known to the external Sema source.
   ///
   /// The external source should append its own used vtables to the given
