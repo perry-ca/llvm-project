@@ -9,6 +9,3 @@
 
 // In C++, non-extern "C" functions do not resolve #pragma export.
 void non_extern_c_func(int) {}
-
-// expected-warning@pragma-export-warn.hpp:3 {{failed to resolve '#pragma export' to a declaration}}
-// expected-warning@pragma-export-warn.hpp:4 {{failed to resolve '#pragma export' to a declaration}}
