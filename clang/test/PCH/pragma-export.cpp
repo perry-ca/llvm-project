@@ -4,15 +4,15 @@
 // RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -include %S/pragma-export.hpp -x c++ %s -emit-llvm -o - | FileCheck %s
 
 /// Test with pch.
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t %S/pragma-export.hpp
+// RUN: %clang_cc1 -source-date-epoch 1613676318 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t %S/pragma-export.hpp
 // RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -include-pch %t -x c++ %s -emit-llvm -o - | FileCheck %s
 
 /// Compile it a few times to check that the PCH file is deterministic.
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
+// RUN: %clang_cc1 -source-date-epoch 1613676318 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
 // RUN: diff %t %t.cmp >/dev/null
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
+// RUN: %clang_cc1 -source-date-epoch 1613676318 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
 // RUN: diff %t %t.cmp >/dev/null
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
+// RUN: %clang_cc1 -source-date-epoch 1613676318 -triple s390x-none-zos -fzos-extensions -fvisibility=hidden -x c++-header -emit-pch -o %t.cmp %S/pragma-export.hpp
 // RUN: diff %t %t.cmp >/dev/null
 
 /// Check that #pragma export is exported into PCHs even if the header contains
