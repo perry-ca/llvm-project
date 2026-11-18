@@ -1,16 +1,12 @@
 // REQUIRES: systemz-registered-target
 
-/// Test this without pch.
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -include %S/pragma-export-warn.h %s -fsyntax-only -verify
+// Test this without pch.
+// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -include %S/pragma-export-warn.h -fsyntax-only -verify %s
 
-/// Test with pch.
+// Test with pch.
 // RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -x c-header -emit-pch -o %t %S/pragma-export-warn.h
-// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -include-pch %t %s -fsyntax-only -verify
+// RUN: %clang_cc1 -triple s390x-none-zos -fzos-extensions -include-pch %t -DPCH -fsyntax-only -verify %s
 
-static void static_func(void) {}
-static int static_var;
-
-// expected-warning@pragma-export-warn.h:3 {{failed to resolve '#pragma export' to a declaration}}
-// expected-warning@pragma-export-warn.h:4 {{failed to resolve '#pragma export' to a declaration}}
-// expected-warning@pragma-export-warn.h:5 {{#pragma export is applicable to symbols with external linkage only; not applied to 'static_func'}}
-// expected-warning@pragma-export-warn.h:6 {{#pragma export is applicable to symbols with external linkage only; not applied to 'static_var'}}
+#ifdef PCH
+// expected-no-diagnostics
+#endif

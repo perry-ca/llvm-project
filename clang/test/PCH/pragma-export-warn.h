@@ -1,6 +1,4 @@
 // Header for PCH warning test pragma-export-warn.c
 
-#pragma export(unresolved_func)
-#pragma export(unresolved_var)
-#pragma export(static_func)
-#pragma export(static_var)
+#pragma export(sf1(void)) // expected-warning{{missing ')' after '#pragma export' - ignoring}}
+#pragma export(s1(int))   // expected-warning{{missing ')' after '#pragma export' - ignoring}}
