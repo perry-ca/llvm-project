@@ -9,3 +9,8 @@
 
 static void static_func(void) {}
 static int static_var;
+
+// expected-warning@pragma-export-warn.h:3 {{failed to resolve '#pragma export' to a declaration}}
+// expected-warning@pragma-export-warn.h:4 {{failed to resolve '#pragma export' to a declaration}}
+// expected-warning@pragma-export-warn.h:5 {{#pragma export is applicable to symbols with external linkage only; not applied to 'static_func'}}
+// expected-warning@pragma-export-warn.h:6 {{#pragma export is applicable to symbols with external linkage only; not applied to 'static_var'}}
