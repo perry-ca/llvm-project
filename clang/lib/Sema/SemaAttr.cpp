@@ -1449,7 +1449,9 @@ void Sema::ActOnPragmaExport(IdentifierInfo *IdentId, SourceLocation NameLoc,
       Diag(NameLoc, diag::warn_pragma_not_applied) << "export" << PrevDecl;
       return;
     }
-    if (FD->hasBody()) {
+    // isDefined() also covers definitions that have no body, such as a
+    // function declared with the alias attribute.
+    if (FD->isDefined()) {
       Diag(NameLoc, diag::warn_pragma_not_applied_to_defined_symbol)
           << "export";
       return;

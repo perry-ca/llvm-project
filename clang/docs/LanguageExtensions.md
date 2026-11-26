@@ -1128,6 +1128,14 @@ generated saying the pragma didn't resolve to a declaration. For example:
 int func(double) { return 0; } // warning: failed to resolve '#pragma export' to a declaration
 ```
 
+In C, functions declared with `__attribute__((overloadable))` are mangled, so the
+pragma only applies to the one overload of that name, if any, that does not have
+the attribute.
+
+The pragma also interacts with `__attribute__((alias("...")))`. For example, in
+`int f(int) __attribute__((alias("_f")));` if there is a pragma for `f` or `_f`,
+the pragma must appear before the definition of `_f`.
+
 ### #pragma map
 
 Clang supports the map pragma as a way to change the name of a declaration

@@ -7769,8 +7769,14 @@ void Sema::ProcessPragmaExport(DeclaratorDecl *NewD) {
   if (PendingExportedNames.empty())
     return;
   if (FunctionDecl *FD = dyn_cast<FunctionDecl>(NewD)) {
-    if (getLangOpts().CPlusPlus && !FD->isExternC())
+    if (getLangOpts().CPlusPlus) {
+      if (!FD->isExternC())
+        return;
+    } else if (FD->hasAttr<OverloadableAttr>()) {
+      // In C, an overloadable function is mangled, so the pragma applies
+      // only to the (single) overload that lacks the attribute.
       return;
+    }
   }
   IdentifierInfo *IdentName = NewD->getIdentifier();
   if (IdentName == nullptr)

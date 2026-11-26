@@ -40,3 +40,32 @@ int func() {
 int local = 2;
 int l2 =4;
 
+// Testing __attribute__((overloadable)). Overloadable functions are mangled, so
+// the pragma can only apply to the single overload that lacks the attribute.
+// Cases that are accepted are covered in CodeGen/pragma-export-overloadable.c.
+
+// All overloads are marked, so there is nothing to export.
+void ov1(int) __attribute__((overloadable));
+void ov1(double) __attribute__((overloadable));
+#pragma export(ov1) // expected-warning{{failed to resolve '#pragma export' to a declaration}}
+
+#pragma export(ov2) // expected-warning{{failed to resolve '#pragma export' to a declaration}}
+void ov2(int) __attribute__((overloadable));
+void ov2(double) __attribute__((overloadable));
+
+// The unmarked overload is defined.
+__attribute__((overloadable)) void ov3(double) {}
+void ov3(int) {}
+#pragma export(ov3) // expected-warning {{'#pragma export' can only applied before a symbol is defined}}
+
+// Testing __attribute__((alias)). A declaration with the alias attribute is a
+// definition. Cases that are accepted are covered in
+// CodeGen/pragma-export-alias.c.
+void at1(void) {}
+void al1(void) __attribute__((alias("at1")));
+#pragma export(al1) // expected-warning {{'#pragma export' can only applied before a symbol is defined}}
+
+int av1 = 1;
+extern int ava1 __attribute__((alias("av1")));
+#pragma export(ava1) // expected-warning {{'#pragma export' can only applied before a symbol is defined}}
+
